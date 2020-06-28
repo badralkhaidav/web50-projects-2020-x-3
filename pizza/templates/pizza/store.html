@@ -1,0 +1,20 @@
+{% extends 'pizza/main.html' %}
+{% load static %}
+{% block content %}
+	<div class="row">
+		{% for product in products %}
+		<div class="col-lg-4">
+			<img class="thumbnail" src="{% static 'images/pizza-640x360_3VLn9jB.jpg' %}">
+			<div class="box-element product">
+				<h6><strong>{{product.name}} with topping {{product.topping}}</strong></h6>
+				<hr>
+				<button  data-product={{product.id}} data-topping={{product.topping}} data-action="add" class="btn btn-outline-secondary add-btn update-cart">Add to Cart</button>
+
+				<h4 style="display: inline-block; float: right"><strong>${{product.price}}</strong></h4>
+
+			</div>
+		</div>
+		{% endfor %}
+	</div>
+
+{% endblock content %}

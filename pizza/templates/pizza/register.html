@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+    <head>
+        <title></title>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.slim.min.js"></script>
+        <script type="text/javascript" src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script>
+
+        <link rel="stylesheet" type="text/css" href="{% static 'css/stylelogin.css' %}">
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+        <title>B messenger</title>
+
+           <!-- Bootstrap CSS CDN -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+
+           <!-- Font Awesome JS -->
+        <script defer src="https://use.fontawesome.com/releases/v5.0.13/js/solid.js" integrity="sha384-tzzSw1/Vo+0N5UhStP3bvwWPq+uvzCMfrN1fEFe+xBmv1C/AtVX5K0uZtmcHitFZ" crossorigin="anonymous"></script>
+        <script defer src="https://use.fontawesome.com/releases/v5.0.13/js/fontawesome.js" integrity="sha384-6OIrr52G08NpOFSZdxxz1xdNSndlD4vdcf/q2myIUVO0VsqaGHJsB0RaBE01VTOY" crossorigin="anonymous"></script>
+
+
+    </head>
+    <body>
+
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
+        <div class="card card-signin my-5">
+          <div class="card-body">
+            <h5 class="card-title text-center">Register</h5>
+            <form action="{% url 'store' %}" method="post" class="form-signin">{% csrf_token %}
+
+              <div class="form-label-group">
+                <input name="username" id="username" class="form-control" placeholder="Email address" required autofocus>
+                <label for="inputEmail">User name</label>
+              </div>
+
+              <div class="form-label-group">
+                <input name="passwrd" id="passwrd" class="form-control" placeholder="Password" required>
+                <label for="inputPassword">Password</label>
+              </div>
+              <div class="form-label-group">
+                <input name="email" type="text" id="email" class="form-control" placeholder="Password" required>
+                <label for="inputPassword">Email</label>
+              </div>
+
+              <div class="custom-control custom-checkbox mb-3">
+                <input type="checkbox" class="custom-control-input" id="customCheck1">
+                <label class="custom-control-label" for="customCheck1">Remember password</label>
+              </div>
+              <button class="btn btn-lg btn-primary btn-block text-uppercase" type="submit">Sign in</button>
+              <hr class="my-4">
+            </form>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>

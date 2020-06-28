@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+<head>
+	<title>Pizza</title>
+
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1" />
+
+
+
+	<link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
+
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/css/bootstrap-select.css" />
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.bundle.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/js/bootstrap-select.min.js"></script>
+
+
+		<script type="text/javascript">
+			var user = '{{request.user}}'
+
+			function getToken(name) {
+			    var cookieValue = null;
+			    if (document.cookie && document.cookie !== '') {
+			        var cookies = document.cookie.split(';');
+			        for (var i = 0; i < cookies.length; i++) {
+			            var cookie = cookies[i].trim();
+			            // Does this cookie string begin with the name we want?
+			            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+			                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+			                break;
+			            }
+			        }
+			    }
+			    return cookieValue;
+			}
+			var csrftoken = getToken('csrftoken')
+
+			function getCookie(name) {
+			    // Split cookie string and get all individual name=value pairs in an array
+			    var cookieArr = document.cookie.split(";");
+
+			    // Loop through the array elements
+			    for(var i = 0; i < cookieArr.length; i++) {
+			        var cookiePair = cookieArr[i].split("=");
+
+			        /* Removing whitespace at the beginning of the cookie name
+			        and compare it with the given string */
+			        if(name == cookiePair[0].trim()) {
+			            // Decode the cookie value and return
+			            return decodeURIComponent(cookiePair[1]);
+			        }
+			    }
+
+			    // Return null if not found
+			    return null;
+			}
+			var cart = JSON.parse(getCookie('cart'))
+
+			if (cart == undefined){
+				cart = {}
+				console.log('Cart Created!', cart)
+				document.cookie ='cart=' + JSON.stringify(cart) + ";domain=;path=/"
+			}
+			console.log('Cart:', cart)
+
+		</script>
+
+
+</head>
+<body>
+
+	<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+	  <a class="navbar-brand" href="{% url 'store' %}">Pizza store</a>
+	  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+	    <span class="navbar-toggler-icon"></span>
+	  </button>
+
+	  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+	    <ul class="navbar-nav mr-auto">
+	      <li class="nav-item active">
+	        <a class="nav-link" href="{% url 'store' %}">Pizza<span class="sr-only">(current)</span></a>
+	      </li>
+
+	    </ul>
+	    <div class="form-inline my-2 my-lg-0">
+	     	<a href="#"class="btn btn-warning">Login</a>
+
+	     	<a href="{% url 'cart' %}">
+	    		<img  id="cart-icon" src="{% static 'images/cart.png' %}">
+	    	</a>
+	    	<p id="cart-total">{{cartItems}}</p>
+
+	    </div>
+	  </div>
+	</nav>
+
+     <div class="container">
+            <br>
+
+	<div class="row">
+		<div class="col-lg-12">
+			<div class="box-element">
+
+				<a  class="btn btn-outline-dark" href="{% url 'store' %}">&#x2190; Continue Shopping</a>
+
+				<br>
+				<br>
+				<table class="table">
+					<tr>
+						<th><h5>Items: <strong>{{order.get_cart_items}}</strong></h5></th>
+						<th><h5>Total:<strong> ${{order.get_cart_total|floatformat:2}}</strong></h5></th>
+						<th>
+							<a  style="float:right; margin:5px;" class="btn btn-success" href="{% url 'checkout' %}">Checkout</a>
+						</th>
+					</tr>
+				</table>
+
+			</div>
+
+			<br>
+			<div class="box-element">
+				<div class="cart-row">
+					<div style="flex:2"></div>
+					<div style="flex:2"><strong>Item</strong></div>
+					<div style="flex:1"><strong>Topping</strong></div>
+					<div style="flex:1"><strong>Price</strong></div>
+					<div style="flex:1"><strong>Quantity</strong></div>
+					<div style="flex:1"><strong>Total</strong></div>
+				</div>
+				{% for item in items %}
+				<div class="cart-row">
+					<div style="flex:2"><img class="row-image" src="{{item.product.imageURL}}"></div>
+					<div style="flex:2"><p>{{item.product.name}} with {{item.product.topping}} topping: {{item.topping_description}}</p></div>
+					<div style="flex:1">
+						<select id ={{item.product.id}} data-product={{item.product.id}} data-action="select_topping"  onchange="topping_change( '{{item.product.id}}' , '{{item.product.topping}}' , 'select_topping', value )" class="selectpicker"  multiple data-live-search="true">
+				{% if "Pizza" in item.product.name %}
+					{% if "Pepperoni" in item.topping_description %}
+								<option selected>Pepperoni</option>
+						{% else %}
+						<option>Pepperoni</option>
+					{% endif %}
+					{% if "Sausage" in item.topping_description %}
+								<option selected>Sausage</option>
+						{% else %}
+						<option>Sausage</option>
+					{% endif %}
+					{% if "Mushrooms" in item.topping_description %}
+								<option selected>Mushrooms</option>
+						{% else %}
+						<option>Mushrooms</option>
+					{% endif %}
+					{% if "Onions" in item.topping_description %}
+								<option selected>Onions</option>
+						{% else %}
+						<option>Onions</option>
+					{% endif %}
+					{% if "Ham" in item.topping_description %}
+								<option selected>Ham</option>
+						{% else %}
+						<option>Ham/option>
+					{% endif %}
+					{% if "Canadian Bacon" in item.topping_description %}
+								<option selected>Canadian Bacon</option>
+						{% else %}
+						<option>Canadian Bacon</option>
+					{% endif %}
+					{% if "Pineapple" in item.topping_description %}
+								<option selected>Pineapple</option>
+						{% else %}
+						<option>Pineapple</option>
+					{% endif %}
+					{% if "Eggplant" in item.topping_description %}
+								<option selected>Eggplant</option>
+						{% else %}
+						<option>Eggplant</option>
+					{% endif %}
+					{% if "Tomato & Basil" in item.topping_description %}
+								<option selected>Tomato & Basil</option>
+						{% else %}
+						<option>Tomato & Basil</option>
+					{% endif %}
+					{% if "Green Peppers" in item.topping_description %}
+								<option selected>Green Peppers</option>
+						{% else %}
+						<option>Green Peppers</option>
+					{% endif %}
+					{% if "Hamburger" in item.topping_description %}
+								<option selected>Hamburger</option>
+						{% else %}
+						<option>Hamburger</option>
+					{% endif %}
+					{% if "Spinach" in item.topping_description %}
+								<option selected>Spinach</option>
+						{% else %}
+						<option>Spinach</option>
+					{% endif %}
+					{% if "Artichoke" in item.topping_description %}
+								<option selected>Artichoke</option>
+						{% else %}
+						<option>Artichoke</option>
+					{% endif %}
+					{% if "Buffalo Chicken" in item.topping_description %}
+								<option selected>Buffalo Chicken</option>
+						{% else %}
+						<option>Buffalo Chicken</option>
+					{% endif %}
+					{% if "Barbecue Chicken" in item.topping_description %}
+								<option selected>Barbecue Chicken</option>
+						{% else %}
+						<option>Barbecue Chicken</option>
+					{% endif %}
+					{% if "Anchovies" in item.topping_description %}
+								<option selected>Anchovies</option>
+						{% else %}
+						<option>Anchovies</option>
+					{% endif %}
+					{% if "Black Olives" in item.topping_description %}
+								<option selected>Black Olives</option>
+						{% else %}
+						<option>Black Olives</option>
+					{% endif %}
+					{% if "Fresh Garlic" in item.topping_description %}
+								<option selected>Fresh Garlic</option>
+						{% else %}
+						<option>Fresh Garlic</option>
+					{% endif %}
+					{% if "Zucchini" in item.topping_description %}
+								<option selected>Zucchini</option>
+						{% else %}
+						<option>Zucchini</option>
+					{% endif %}
+				{% endif %}
+
+			{% if "Sub" in item.product.name %}
+				{% if "Mushrooms" in item.topping_description %}
+							<option selected>Mushrooms</option>
+					{% else %}
+					<option>Mushrooms</option>
+				{% endif %}
+				{% if "Green Peppers" in item.topping_description %}
+							<option selected>Green Peppers</option>
+					{% else %}
+					<option>Green Peppers</option>
+				{% endif %}
+				{% if "Onions" in item.topping_description %}
+							<option selected>Onions</option>
+					{% else %}
+					<option>Onions</option>
+				{% endif %}
+				{% if "Extre Cheese" in item.topping_description %}
+							<option selected>Extre Cheese</option>
+					{% else %}
+					<option>Extre Cheese</option>
+				{% endif %}
+			{% endif %}
+						</select>
+					</div>
+					<div style="flex:1"><p>${{item.product.price|floatformat:2}}</p></div>
+					<div style="flex:1">
+						<p class="quantity">{{item.quantity}}</p>
+						<div class="quantity">
+							<img data-product={{item.product.id}}  data-action="add" class="chg-quantity update-cart"  src="{% static  'images/arrow-up.png' %}">
+
+							<img data-product={{item.product.id}} data-action="remove" class="chg-quantity update-cart" src="{% static  'images/arrow-down.png' %}">
+						</div>
+					</div>
+					<div style="flex:1"><p>${{item.get_total|floatformat:2}}</p></div>
+				</div>
+				{% endfor %}
+			</div>
+		</div>
+	</div>
+
+
+
+</div>
+<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="{% static 'js/cart.js' %}"></script>
+
+
+</body>
+</html>
